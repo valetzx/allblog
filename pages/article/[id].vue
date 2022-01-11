@@ -75,11 +75,15 @@ export default {
             const getContent = (c) => this.content = c
             const getContentType = (t) => {
                 this.contentType = t
-                if (t === 'md' || t === 'markdown') {
-                    this.content = marked.parse(this.content)
+                if (t === 'md' || t === 'markdown' || t === 'html') {
+                    if (t === 'md' || t === 'markdown') {
+                        this.content = marked.parse(this.content)
+                    }
                     for (const f of this.files) {
-                        this.content = this.content.replaceAll('<img src="' + f.name, '<img src="' + f.url)
-                        this.content = this.content.replaceAll('<img src="./' + f.name, '<img src="' + f.url)
+                        this.content = this.content.replaceAll('src="' + f.name, 'src="' + f.url)
+                        this.content = this.content.replaceAll('src="./' + f.name, 'src="./' + f.url)
+                        this.content = this.content.replaceAll('href="' + f.name, 'href="' + f.url)
+                        this.content = this.content.replaceAll('href="./' + f.name, 'href="./' + f.url)
                     }
                 }
             }
