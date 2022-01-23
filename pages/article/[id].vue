@@ -43,7 +43,6 @@ const errorMessage = useErrorMessage()
 <script>
 import axios from 'axios'
 import { marked } from 'marked'
-
 export default {
     name: '[id]',
     layout: 'home',
@@ -68,10 +67,8 @@ export default {
             this.isLoading = true
             this.headMessage = ''
             this.errorMessage = ''
-
             const articleId = this.$route.params.id
             const password = this.myPassword
-
             const getContent = (c) => this.content = c
             const getContentType = (t) => {
                 this.contentType = t
@@ -109,7 +106,6 @@ export default {
                     this.isLoading = false
                 }
             }
-
             axios.get('/api/article', {
                 params: {
                     id: articleId,
