@@ -4,7 +4,7 @@
             <div class="flex h-18 items-center">
                 <button class="ml-3 mr-1 text-2xl text-green-500 dark:text-green-100" @click="goBack">↩Back</button>
                 <button class="mr-3 ml-1 text-2xl" @click="changeMode">{{ modeIcon }}</button>
-                <div class="mx-2 ml-1 text-2xl text-green-500 dark:text-green-100" @click="goHome">🏠Home/Blog</div>
+                <div class="mx-2 cursor-pointer ml-1 text-2xl text-green-500 dark:text-green-100" @click="goHome">🏠Home/Blog</div>
                 <div class="mx-2 flex-1 text-xl font-mono text-green-500 dark:text-green-100">{{ headMessage }}</div>
                 <div class="mx-2 text-xl font-mono font-medium text-green-500 dark:text-green-100">{{ config.WEBSITE_NAME }}</div>
             </div>
