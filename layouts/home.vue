@@ -2,13 +2,11 @@
     <div>
         <header class="fixed z-10 top-0 left-0 h-18 w-full backdrop-filter backdrop-blur bg-white dark:bg-dark bg-opacity-80 dark:backdrop-filter dark:backdrop-blur dark:bg-opacity-80">
             <div class="flex h-18 items-center">
-                <button class="ml-3 mr-1 text-2xl text-green-500 dark:text-green-100" @click="goBack">↩</button>
+                <button class="ml-3 mr-1 text-2xl text-green-500 dark:text-green-100" @click="goBack">↩Back</button>
                 <button class="mr-3 ml-1 text-2xl" @click="changeMode">{{ modeIcon }}</button>
-                <div class="mx-2 cursor-pointer text-xl font-mono font-medium dark:text-green-100" @click="goHome">GoBack/Blog</div>
-                <div class="mx-2 text-xl font-mono text-green-500 dark:text-green-100">{{ headMessage }}</div>
-                <div class="flex justify-end w-full">
-                    <div class="mx-2 text-xl font-mono font-medium text-green-500 dark:text-green-100">{{ config.WEBSITE_NAME }}</div>
-                </div>
+                <div class="mx-2 cursor-pointer text-xl font-mono font-medium dark:text-green-100" @click="goHome">🏠Home/Blog</div>
+                <div class="mx-2 flex-1 text-xl font-mono text-green-500 dark:text-green-100">{{ headMessage }}</div>
+                <div class="mx-2 text-xl font-mono font-medium text-green-500 dark:text-green-100">{{ config.WEBSITE_NAME }}</div>
             </div>
         </header>
         <div class="h-18 w-full"></div>
