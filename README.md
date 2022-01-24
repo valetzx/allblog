@@ -2,7 +2,7 @@
 
 将OneDrive中的文件夹作为博客，解析文件夹内文章的内容，发送到前端
 
-[演示Demo](https://onedrive-blog-valetzx.vercel.app/)
+[演示Demo](https://allblog.vercel.app/)
 
 ## 使用
 
@@ -23,7 +23,7 @@ import { defineNuxtConfig } from 'nuxt3'
 // https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
 export default defineNuxtConfig({
     buildModules: [
-        'nuxt-windicss',
+        'nuxt-windicss',3
     ],
     publicRuntimeConfig: {
         WEBSITE_NAME: 'Arect\'s blog' // 博客的名称，可修改
