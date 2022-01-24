@@ -27,7 +27,7 @@ export default {
     color: #FFFFFF;
 }
 ::-moz-selection{
-    background-color: rgb(16, 185, 129);
+    background-color: rgba(16, 185, 129);
     color: #FFFFFF;
 }
 </style>
