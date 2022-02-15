@@ -30,6 +30,14 @@
             <div v-else-if="contentType === 'txt'">
                 <div class="dark:text-green-100" style="white-space: pre-wrap;" v-text="content" />
             </div>
+            <div v-else-if="contentType === 'url'">
+                <iframe class="w-full" style="height: calc(100vh - 8.5rem)" :src="content" />
+            </div>
+            <div v-else-if="contentType === 'redirect'">
+                <div class="dark:text-green-100" style="white-space: pre-wrap; text-align: center;">
+                    即将跳转至 <span class="text-green-800 dark:text-green-100">{{ content }}</span>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -43,9 +51,11 @@ const errorMessage = useErrorMessage()
 <script>
 import axios from 'axios'
 import { marked } from 'marked'
+definePageMeta({
+    layout: "home",
+});
 export default {
     name: '[id]',
-    layout: 'home',
     data () {
         return {
             content: '',
@@ -72,6 +82,9 @@ export default {
             const getContent = (c) => this.content = c
             const getContentType = (t) => {
                 this.contentType = t
+                if (this.contentType === 'redirect') {
+                    window.location.href = this.content
+                }
                 if (t === 'md' || t === 'markdown' || t === 'html') {
                     if (t === 'md' || t === 'markdown') {
                         this.content = marked.parse(this.content)
@@ -110,51 +123,4 @@ export default {
                 params: {
                     id: articleId,
                     password: password
-                }
-            }).then((response) => {
-                if (!response.data.password) {
-                    noNeedPassword()
-                    getSettings(response.data.settings)
-                    getFiles(response.data.files)
-                    if (response.data.contentUrl === '') {
-                        getContent('文件缺失，请等待同步')
-                        stopLoading(1)
-                        return
-                    }
-                    axios.get(response.data.contentUrl)
-                    .then((contentResponse) => {
-                        getContent(contentResponse.data)
-                        getContentType(response.data.contentType)
-                    })
-                    .catch((contentError) => {
-                        getStatusCode(contentError.response.status)
-                    })
-                    .finally(() => {
-                        stopLoading(1)
-                    })
-                } else {
-                    stopLoading(1)
-                    needPassword()
-                }
-            }).catch((error) => {
-                getStatusCode(error.response.status)
-            }).finally(() => {
-                stopLoading(0)
-            })
-        },
-        onFocus () {
-            this.blurLevel = 'blur-1'
-        },
-        onBlur () {
-            this.blurLevel = 'blur-4'
-        }
-    }
-}
-</script>
-
-<style scoped>
-button {
-    outline: none;
-}
-.markdown-body {}
-</style>
+    
