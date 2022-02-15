@@ -11,16 +11,21 @@
                         {{ a.updateDate }}
                     </div>
                     <div class="flex w-full justify-end">
-                            <NuxtLink :to="'/article/' + a.id">
-                                <div class="bg-green-100 dark:bg-green-900 dark:text-green-100 p-1 border-3 border-green-500 border-dashed rounded-lg text-green-800 font-bold">
-                                    {{ getConfig('button') }}
-                                </div>
-                            </NuxtLink>
+                        <nuxt-link :to="'/article/' + a.id">
+                            <div class="bg-green-100 dark:bg-green-900 dark:text-green-100 p-1 border-3 border-green-500 border-dashed rounded-lg text-green-800 font-bold">
+                                {{ getConfig('button') }}
+                            </div>
+                        </nuxt-link>
                     </div>
                 </div>
             </div>
             <div v-if="article.length === 0">
                 空
+            </div>
+            <div class="text-center">
+                <button class="text-2xl" @click="prePage">⬅️</button>
+                <span class="text-md text-gray-500 dark:text-green-100 px-2 border-3 border-green-500 border-dashed rounded-lg">{{ nowPage }}</span>
+                <button class="text-2xl" @click="nextPage">➡️</button>
             </div>
         </div>
         <div v-else>
@@ -39,74 +44,87 @@ const errorMessage = useErrorMessage()
 
 <script>
 import axios from 'axios'
+
+definePageMeta({
+    layout: "home",
+});
+
 export default {
     name: 'index',
-    layout: 'home',
     data () {
         return {
             article: [],
             defaultSettings: {
                 saying: '全部文章：',
                 desc: true,
-                button: '点击阅读'
+                button: '点击阅读',
+                pageNum: 10
             },
-            statusCode: 200
+            statusCode: 200,
+            nowPage: 1
         }
     },
-    beforeMount() {
-        this.isLoading = true
-        this.headMessage = ''
-        this.errorMessage = ''
-
-        const getData = (a) => {
-            this.article = a
-            this.sortArticle()
-        }
-        const getSettings = (s) => {
-            this.blogSettings = s
-            this.storeBlogSettings = true
-        }
-        const isBlogSettings = () => false
-        const statusMonitor = [false, false]
-        const stopLoading = (i) => {
-            statusMonitor[i] = true
-            if (statusMonitor[0] && statusMonitor[1]) {
-                this.isLoading = false
-            }
-        }
-        const getStatusCode = (c) => {
-            this.statusCode = c
-            if (c !== 200) {
-                this.errorMessage = c
-            }
-        }
-
-        axios.get('/api/index')
-        .then(async (response) => {
-            if (!isBlogSettings()) {
-                await axios.get(response.data.settingsUrl)
-                .then((response) => {
-                    getSettings(response.data)
-                })
-                .catch((error) => {
-                    getStatusCode(error.response.status)
-                })
-                .finally(() => {
-                    stopLoading(1)
-                })
-            } else {
-                stopLoading(1)
-            }
-            getData(response.data.article)
-        })
-        .catch((error) => {
-            getStatusCode(error.response.status)
-        })
-        .finally(() => {
-            stopLoading(0)
-        })
+    mounted () {
+        this.getArticle(1)
     },
     methods: {
+        getArticle (page) {
+            this.isLoading = true
+            this.headMessage = ''
+            this.errorMessage = ''
+
+            const getData = (a) => {
+                this.article = a
+                this.sortArticle()
+            }
+            const getSettings = (s) => {
+                this.blogSettings = s
+                this.storeBlogSettings = true
+            }
+            const isBlogSettings = () => false
+            const statusMonitor = [false, false]
+            const stopLoading = (i) => {
+                statusMonitor[i] = true
+                if (statusMonitor[0] && statusMonitor[1]) {
+                    this.isLoading = false
+                }
+            }
+            const getStatusCode = (c) => {
+                this.statusCode = c
+                if (c !== 200) {
+                    this.errorMessage = c
+                }
+            }
+
+            axios.get('/api/index', {
+                params: {
+                    page
+                }
+            })
+            .then(async (response) => {
+                if (!isBlogSettings() && page === 1) {
+                    await axios.get(response.data.settingsUrl)
+                    .then((response) => {
+                        getSettings(response.data)
+                    })
+                    .catch((error) => {
+                        getStatusCode(error.response.status)
+                    })
+                    .finally(() => {
+                        stopLoading(1)
+                    })
+                } else {
+                    stopLoading(1)
+                }
+                getData(response.data.article)
+            })
+            .catch((error) => {
+                getStatusCode(error.response.status)
+            })
+            .finally(() => {
+                stopLoading(0)
+            })
+        },
         sortArticle () {
             let i = 0
             for (const a of this.article) {
@@ -132,6 +150,18 @@ export default {
                 }
             }
             return this.defaultSettings[name]
+        },
+        prePage () {
+            if (this.nowPage > 1) {
+                this.nowPage--
+                this.getArticle(this.nowPage)
+            }
+        },
+        nextPage () {
+            if (this.article.length === this.blogSettings.pageNum) {
+                this.nowPage++
+                this.getArticle(this.nowPage)
+            }
         }
     }
 }
