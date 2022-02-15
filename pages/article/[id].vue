@@ -72,7 +72,7 @@ export default {
     beforeMount() {
         this.loadArticle('')
     },
-    methods: {
+        methods: {
         loadArticle () {
             this.isLoading = true
             this.headMessage = ''
@@ -123,4 +123,51 @@ export default {
                 params: {
                     id: articleId,
                     password: password
-    
+                }
+            }).then((response) => {
+                if (!response.data.password) {
+                    noNeedPassword()
+                    getSettings(response.data.settings)
+                    getFiles(response.data.files)
+                    if (response.data.contentUrl === '') {
+                        getContent('文件缺失，请等待同步')
+                        stopLoading(1)
+                        return
+                    }
+                    axios.get(response.data.contentUrl)
+                    .then((contentResponse) => {
+                        getContent(contentResponse.data)
+                        getContentType(response.data.contentType)
+                    })
+                    .catch((contentError) => {
+                        getStatusCode(contentError.response.status)
+                    })
+                    .finally(() => {
+                        stopLoading(1)
+                    })
+                } else {
+                    stopLoading(1)
+                    needPassword()
+                }
+            }).catch((error) => {
+                getStatusCode(error.response.status)
+            }).finally(() => {
+                stopLoading(0)
+            })
+        },
+        onFocus () {
+            this.blurLevel = 'blur-1'
+        },
+        onBlur () {
+            this.blurLevel = 'blur-4'
+        }
+    }
+}
+</script>
+
+<style scoped>
+button {
+    outline: none;
+}
+.markdown-body {}
+</style>
