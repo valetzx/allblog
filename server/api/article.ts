@@ -38,11 +38,12 @@ export default async (req: IncomingMessage, res: ServerResponse) => {
         return result
     }
 
-    const settingItem = itemsCache.find(item => (item.name === 'settings.json' || item.name === 'Settings.json'))
+    const settingItem = itemsCache.findIndex(item => (item.name === 'settings.json' || item.name === 'Settings.json'))
     let settings = { password: '' }
-    if (settingItem !== undefined) {
-        await axios.get(settingItem['@microsoft.graph.downloadUrl'])
+    if (settingItem !== -1) {
+        await axios.get(itemsCache[settingItem]['@microsoft.graph.downloadUrl'])
             .then((response) => {
+                itemsCache.splice(settingItem, 1)
                 settings = response.data
             })
             .catch((error) => {
@@ -63,6 +64,8 @@ export default async (req: IncomingMessage, res: ServerResponse) => {
     }
 
     const fileIndex = [
+        'index.url',
+        'redirect.url',
         'index.html',
         'index.md',
         'index.markdown',
@@ -70,23 +73,27 @@ export default async (req: IncomingMessage, res: ServerResponse) => {
     ]
 
     for (const fi of fileIndex) {
-        const temp = itemsCache.find(item => item.name === fi)
-        if (temp !== undefined) {
-            result.contentUrl = temp['@microsoft.graph.downloadUrl']
-            result.contentType = fi.split('.')[1]
+        const indexOfFile = itemsCache.findIndex(item => item.name === fi)
+        if (indexOfFile !== -1) {
+            result.contentUrl = itemsCache[indexOfFile]['@microsoft.graph.downloadUrl']
+            if (fi === 'redirect.url') {
+                result.contentType = 'redirect'
+            }
+            else {
+                result.contentType = fi.split('.')[1]
+            }
+            itemsCache.splice(indexOfFile, 1)
             break
         }
     }
 
-    for (const ic of itemsCache) {
-        if (ic.name !== 'index.html' && ic.name !== 'index.md' && ic.name !== 'index.txt') {
-            if (ic.name !== 'settings.json' && ic.name !== 'Settings.json') {
-                if (ic['file'] !== undefined) {
-                    result.files.push({
-                        name: ic.name,
-                        url: ic['@microsoft.graph.downloadUrl']
-                    })
-                }
+    if (result.contentType === 'html' || result.contentType === 'md' || result.contentType === 'markdown') {
+        for (const ic of itemsCache) {
+            if (ic['file'] !== undefined) {
+                result.files.push({
+                    name: ic.name,
+                    url: ic['@microsoft.graph.downloadUrl']
+                })
             }
         }
     }
