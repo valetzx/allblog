@@ -51,9 +51,11 @@ const errorMessage = useErrorMessage()
 <script>
 import axios from 'axios'
 import { marked } from 'marked'
+
 definePageMeta({
     layout: "home",
 });
+
 export default {
     name: '[id]',
     data () {
@@ -72,13 +74,15 @@ export default {
     beforeMount() {
         this.loadArticle('')
     },
-        methods: {
+    methods: {
         loadArticle () {
             this.isLoading = true
             this.headMessage = ''
             this.errorMessage = ''
+
             const articleId = this.$route.params.id
             const password = this.myPassword
+
             const getContent = (c) => this.content = c
             const getContentType = (t) => {
                 this.contentType = t
@@ -96,6 +100,7 @@ export default {
                         this.content = this.content.replaceAll('href="./' + f.name, 'href="./' + f.url)
                     }
                 }
+
             }
             const getSettings = (s) => this.settings = s
             const getFiles = (f) => this.files = f
@@ -119,6 +124,7 @@ export default {
                     this.isLoading = false
                 }
             }
+
             axios.get('/api/article', {
                 params: {
                     id: articleId,
