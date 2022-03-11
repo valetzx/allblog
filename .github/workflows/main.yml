@@ -3,9 +3,9 @@ name: backup to onedrive #Action运行标题
 on: #运行条件
   push: #推送到 master 时运行
     branches: 
-      - master  #看自己仓库，有些是main
+      - main  #看自己仓库，有些是main
   schedule: #定时运行
-    - cron: 0 22 1/2 * *
+    - cron: 0 21 1/4 * *
   watch: #点star时运行
     types: started
 jobs:
