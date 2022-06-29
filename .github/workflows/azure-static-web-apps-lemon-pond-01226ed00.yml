@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          nuxi build
+          npm run build
           ls .output/server/
       - name: Build And Deploy
         id: builddeploy
